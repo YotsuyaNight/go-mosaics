@@ -6,9 +6,11 @@ import (
 	_ "image/png"
 	"log"
 	"os"
+
+	"mosaics/img"
 )
 
-func OpenImage(input string) image.Image {
+func OpenImage(input string) *img.Img {
 	inputFile, err := os.Open(input)
 	if err != nil {
 		log.Fatal("Cannot open input file: ", err)
@@ -18,10 +20,10 @@ func OpenImage(input string) image.Image {
 	if err != nil {
 		log.Fatal("Cannot decode input image: ", err)
 	}
-	return inputImg
+	return img.FromBuiltin(inputImg.(image.RGBA64Image))
 }
 
-func AbsDiff(x, y uint32) uint32 {
+func AbsDiff[T uint8 | uint16](x, y T) T {
 	if x < y {
 		return y - x
 	}
