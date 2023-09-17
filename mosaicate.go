@@ -54,14 +54,14 @@ func overwriteImageRange(output *image.RGBA, input *img.Img, coords image.Rectan
 	}
 }
 
-func Mosaicate(input string, iconDir string) {
+func Mosaicate(input string, iconDir string, output string) {
 	log.Println("Running mosaicate with", input, iconDir)
 	blk := 2
 	iconBlk := 16
 	iconMap := parseIconData(scanIconsDir(iconDir))
 	inputImg := utils.OpenImage(input)
 
-	outputFile, err := os.Create("output.png")
+	outputFile, err := os.Create(output)
 	if err != nil {
 		log.Fatal("Cannot create output file: ", err)
 	}
