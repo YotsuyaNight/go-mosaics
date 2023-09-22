@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"runtime"
 
 	"mosaics/img"
 	"mosaics/usage_map"
@@ -54,10 +53,14 @@ func overwriteImageRange(output *image.RGBA, input *img.Img, coords image.Rectan
 	}
 }
 
-func Mosaicate(input string, iconDir string, output string) {
-	log.Println("Running mosaicate with", input, iconDir)
-	blk := 2
-	iconBlk := 16
+func Mosaicate(input string, iconDir string, output string, blk int, iconBlk int) {
+	log.Println("Mosaicator started with config:")
+	log.Println("Input file:        ", input)
+	log.Println("Output file:       ", output)
+	log.Println("Icons directory:   ", iconDir)
+	log.Println("Source block size: ", blk)
+	log.Println("Icon block size:   ", iconBlk)
+
 	iconMap := parseIconData(scanIconsDir(iconDir))
 	inputImg := utils.OpenImage(input)
 
@@ -90,13 +93,8 @@ func Mosaicate(input string, iconDir string, output string) {
 			outputRange := image.Rect(x*iconBlk, y*iconBlk, (x+1)*iconBlk, (y+1)*iconBlk)
 			overwriteImageRange(outputImg, iconMap[bestMatchIndex].Icon, outputRange)
 		}
-
-		ms := runtime.MemStats{}
-		runtime.ReadMemStats(&ms)
-		log.Printf("Heap in use: %d; stack in use: %d", ms.HeapAlloc, ms.StackSys)
-
-		// runtime.GC()
 	}
 
 	png.Encode(outputFile, outputImg)
+	log.Println("Finished!")
 }
