@@ -1,8 +1,12 @@
-module mosaics
+module gomosaics-cli
 
 go 1.21.0
 
 require github.com/urfave/cli/v2 v2.25.7
+
+require gomosaics v0.0.0
+
+replace gomosaics => ../gomosaics
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect

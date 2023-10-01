@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"mosaics/img"
+	"gomosaics/img"
 )
 
 func OpenImage(input string) *img.Img {

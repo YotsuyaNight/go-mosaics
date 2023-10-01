@@ -1,31 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	_ "net/http/pprof"
 	"os"
 
 	"github.com/urfave/cli/v2"
+	"gomosaics"
 )
 
 func main() {
-	fmt.Println("Press any button")
-	var y [1200000000]uint8
-	y = y
-	for i := 0; i < 1200000000; i++ {
-		y[i] = 1
-	}
-	x, _ := fmt.Scanln()
-	fmt.Println("You pressed ", x)
-
-	return
-
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
-
 	err := (&cli.App{
 		Flags: []cli.Flag{
 			&cli.StringFlag{
@@ -53,7 +37,7 @@ func main() {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			Mosaicate(
+			gomosaics.Mosaicate(
 				ctx.String("i"),
 				ctx.String("d"),
 				ctx.String("o"),

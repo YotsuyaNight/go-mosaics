@@ -1,4 +1,4 @@
-package main
+package gomosaics
 
 import (
 	"image"
@@ -8,9 +8,9 @@ import (
 	"os"
 	"path"
 
-	"mosaics/img"
-	"mosaics/usage_map"
-	"mosaics/utils"
+	"gomosaics/img"
+	"gomosaics/usage_map"
+	"gomosaics/utils"
 )
 
 type icon struct {
