@@ -18,10 +18,11 @@ type icon struct {
 	Color [3]uint16
 }
 
-func scanIconsDir(dir string) []string {
+func scanIconsDir(dir string) ([]string, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		log.Fatal("Could not open icon dir: ", err)
+		log.Println("Could not open icon dir: ", err)
+		return nil, err
 	}
 
 	var files []string
@@ -31,16 +32,19 @@ func scanIconsDir(dir string) []string {
 		}
 	}
 
-	return files
+	return files, nil
 }
 
-func parseIconData(iconPaths []string) map[int]icon {
+func parseIconData(iconPaths []string) (map[int]icon, error) {
 	dataMap := make(map[int]icon)
 	for i, iconPath := range iconPaths {
-		iconImg := utils.OpenImage(iconPath)
+		iconImg, err := utils.OpenImage(iconPath)
+		if err != nil {
+			return nil, err
+		}
 		dataMap[i] = icon{iconImg, iconImg.AvgAreaColor(0, 0, iconImg.Width, iconImg.Height)}
 	}
-	return dataMap
+	return dataMap, nil
 }
 
 func overwriteImageRange(output *image.RGBA, input *img.Img, coords image.Rectangle) {
@@ -53,7 +57,7 @@ func overwriteImageRange(output *image.RGBA, input *img.Img, coords image.Rectan
 	}
 }
 
-func Mosaicate(input string, iconDir string, output string, blk int, iconBlk int) {
+func Mosaicate(input string, iconDir string, output string, blk int, iconBlk int) error {
 	log.Println("Mosaicator started with config:")
 	log.Println("Input file:        ", input)
 	log.Println("Output file:       ", output)
@@ -61,12 +65,25 @@ func Mosaicate(input string, iconDir string, output string, blk int, iconBlk int
 	log.Println("Source block size: ", blk)
 	log.Println("Icon block size:   ", iconBlk)
 
-	iconMap := parseIconData(scanIconsDir(iconDir))
-	inputImg := utils.OpenImage(input)
+	iconDirData, err := scanIconsDir(iconDir)
+	if err != nil {
+		return err
+	}
+
+	iconMap, err := parseIconData(iconDirData)
+	if err != nil {
+		return err
+	}
+
+	inputImg, err := utils.OpenImage(input)
+	if err != nil {
+		return err
+	}
 
 	outputFile, err := os.Create(output)
 	if err != nil {
-		log.Fatal("Cannot create output file: ", err)
+		log.Println("Cannot create output file: ", err)
+		return err
 	}
 
 	xBlkCount, yBlkCount := inputImg.Width/blk, inputImg.Height/blk
@@ -95,6 +112,12 @@ func Mosaicate(input string, iconDir string, output string, blk int, iconBlk int
 		}
 	}
 
-	png.Encode(outputFile, outputImg)
+	err = png.Encode(outputFile, outputImg)
+	if err != nil {
+		log.Println("Could not encode png output file: ", err)
+		return err
+	}
+
 	log.Println("Finished!")
+	return nil
 }

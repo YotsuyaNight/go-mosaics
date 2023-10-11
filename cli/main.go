@@ -1,12 +1,12 @@
 package main
 
 import (
+	"gomosaics"
 	"log"
 	_ "net/http/pprof"
 	"os"
 
 	"github.com/urfave/cli/v2"
-	"gomosaics"
 )
 
 func main() {
@@ -37,14 +37,14 @@ func main() {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			gomosaics.Mosaicate(
+			err := gomosaics.Mosaicate(
 				ctx.String("i"),
 				ctx.String("d"),
 				ctx.String("o"),
 				ctx.Int("source-block"),
 				ctx.Int("icon-block"),
 			)
-			return nil
+			return err
 		},
 	}).Run(os.Args)
 	if err != nil {

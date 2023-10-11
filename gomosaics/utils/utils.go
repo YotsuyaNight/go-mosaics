@@ -10,17 +10,19 @@ import (
 	"gomosaics/img"
 )
 
-func OpenImage(input string) *img.Img {
+func OpenImage(input string) (*img.Img, error) {
 	inputFile, err := os.Open(input)
 	if err != nil {
-		log.Fatal("Cannot open input file: ", err)
+		log.Println("Cannot open input file: ", err)
+		return nil, err
 	}
 	defer inputFile.Close()
 	inputImg, _, err := image.Decode(inputFile)
 	if err != nil {
-		log.Fatal("Cannot decode input image: ", err)
+		log.Println("Cannot decode input image: ", err)
+		return nil, err
 	}
-	return img.FromBuiltin(inputImg.(image.RGBA64Image))
+	return img.FromBuiltin(inputImg.(image.RGBA64Image)), nil
 }
 
 func AbsDiff[T uint8 | uint16](x, y T) T {
